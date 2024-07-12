@@ -1,8 +1,8 @@
 # user-interactive-3D-chess
 
-this project 3D Rotating Chess Game Using Computer Graphics implements a classic two-player chess game with a graphical user interface using OpenGL, offering immersive 3D rendering and interactive rotations on an 8x8 checkered board.
+this project **3D Rotating Chess Game Using Computer Graphics** implements a classic two-player chess game with a graphical user interface using OpenGL, offering immersive 3D rendering and interactive rotations on an 8x8 checkered board.
 
-
+---
  _**Introduction to Project:**_
  
 The project ‘3D (playing & Rotating) CHESS GAME USING COMPUTER GRAPHICS’ implements a classic version of Chess with a Graphical User Interface (GUI). The Chess game follows the basic rules of chess, and all the chess pieces only move according to valid moves for that piece. Our implementation of Chess is for two players (use of Artificial Intelligence). It is played on an 8x8 checked board, with a dark square in each player's lower left corner.
