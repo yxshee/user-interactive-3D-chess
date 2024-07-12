@@ -79,6 +79,7 @@ Through the integration of OpenGL graphics and user interface design, the projec
 ●
 ● ●● ● ●
 ●
+● ●●
 ● ●
 
 Rendering a 3D chessboard with alternating dark and light squares.
