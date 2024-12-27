@@ -1,95 +1,155 @@
-# user-interactive-3D-chess
 
-this project **3D Rotating Chess Game Using Computer Graphics** implements a classic two-player chess game with a graphical user interface using OpenGL, offering immersive 3D rendering and interactive rotations on an 8x8 checkered board.
+# User Interactive 3D Chess
 
----
- _**Introduction to Project:**_
- 
-The project ‘3D (playing & Rotating) CHESS GAME USING COMPUTER GRAPHICS’ implements a classic version of Chess with a Graphical User Interface (GUI). The Chess game follows the basic rules of chess, and all the chess pieces only move according to valid moves for that piece. Our implementation of Chess is for two players (use of Artificial Intelligence). It is played on an 8x8 checked board, with a dark square in each player's lower left corner.
+![3D Chess Banner](https://github.com/yxshee/user-interactive-3D-chess/blob/main/assets/banner.png)
 
-We successfully created a GUI using text-based version, inheritance and templates, as specified. Despite several unusual bugs in the GUI, our Chess program is a great, user- friendly game for two players.
+Welcome to **User Interactive 3D Chess**, a modern take on the classic game of chess, enhanced with immersive 3D graphics and intuitive user interactions. Whether you're a chess enthusiast or a casual player, our application offers a captivating and engaging experience.
 
-**What a chess game Possess?**
+## Table of Contents
 
-Chess is a game played by 2 people on a chessboard with 16 pieces each. Our project implements the chess game with graphical user interface. The chess game follows the basic rules of chess and all the chess pieces only move according to valid moves for that piece. Our implementation of chess is for two players (no artificial intelligence). It is played on an 8*8 checkered board, with a dark square in each player’s lower left corner.
+- [Features](#features)
+- [Demo](#demo)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Technologies Used](#technologies-used)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Acknowledgements](#acknowledgements)
 
-In the realm of Computer Graphics, the marriage of traditional games with modern visualisations offers a captivating journey into the realm of digital artistry and programming prowess. This project delves into the fusion of the timeless game of chess with the dynamic capabilities of OpenGL, a versatile graphics library. Through the utilisation of three-dimensional rendering and interactive rotations, this endeavour aims to present chess in a visually immersive and engaging manner.
+## Features
 
-The project explores the intersection of classic gameplay mechanics with cutting-edge graphical representation, providing users with an enhanced chess experience. Leveraging OpenGL's capabilities, players can navigate a virtual chessboard, observing the game from various angles and perspectives. This dynamic visualisation not only serves as a visual spectacle but also offers strategic insights by allowing players to analyse the board from different viewpoints.
+- **3D Graphics**: Stunning 3D rendering of the chessboard and pieces for an immersive experience.
+- **User-Friendly Interface**: Intuitive controls for moving pieces, rotating the board, and customizing views.
+- **Interactive Gameplay**: Real-time move validation, highlights for possible moves, and animations.
+- **Multiplayer Support**: Play against friends locally or challenge opponents online.
+- **AI Opponent**: Choose from various difficulty levels to play against the computer.
+- **Customization**: Select from different themes, piece designs, and board styles to personalize your game.
+- **Save & Load**: Easily save your game progress and resume anytime.
+- **Responsive Design**: Compatible with desktops, tablets, and smartphones for on-the-go play.
 
-By implementing real-time rendering and smooth rotations, the project aims to transcend the traditional two-dimensional constraints of chess, offering a fresh perspective to enthusiasts and novices alike. Through meticulous design and programming, this endeavour seeks to showcase the potential of computer graphics in augmenting traditional games, elevating both their aesthetic appeal and interactive depth. we unveil the mesmerising world of 3D Rotating Chess—a testament to the symbiotic relationship between art, technology, and timeless gameplay.
+## Demo
 
-This project implements a classic version of Chess using Java and a Graphical User Interface. The Chess game follows the basic rules of chess, and all the chess pieces only move according to valid moves for that piece. Our implementation of Chess is for two players. It is played on an 8x8 checkered board, with a dark square in each player’s lower left corner.
-3
+Check out a live demo of the application [here](https://yxshee.github.io/user-interactive-3D-chess).
 
- **Goals of our Project:**
- 
-First goal is to allow two users or players to play the game interactively from remote locations.
-The second goal will be that the program should be working and allow the users to play the game.
+![Gameplay Screenshot](https://github.com/yxshee/user-interactive-3D-chess/blob/main/assets/screenshot.png)
 
-What our chess game can do?
+## Installation
 
-● IMPROVES PROBLEM SOLVING TECHNIQUES.
+### Prerequisites
 
-● IMPROVE LOGIC AND REASONING SKILLS.
+- **Node.js** (v14 or higher)
+- **npm** or **yarn**
 
-● INCREASE PATIENCE AND PERSISTENCE.
+### Steps
 
-● IMPROVES DECISION-MAKING SKILLS.
+1. **Clone the Repository**
 
-**Requirement Specification:**
+   ```bash
+   git clone https://github.com/yxshee/user-interactive-3D-chess.git
+   cd user-interactive-3D-chess
+   ```
 
-There are some certain specifications upon which our project is based upon and with help of following our “DESIGNING OF CHESS GAME” is able to proceed through as follows:
-Software Requirement Specification:
+2. **Install Dependencies**
 
-1. Languages:C++ with graphics (OpenGL Environment).
-2. Platform: Windows operating system.
-3. Software: Visual Stdio
-Hardware Requirement Specification:
-1. RAM: 128MB (Minimum).
-2. Processor: Pentium 2 and above.
-3. Hard Disk: 150 MB.
-4. Includes Memory Storage, a mouse, a keyboard.
+   Using npm:
 
+   ```bash
+   npm install
+   ```
 
+   Or using yarn:
 
- **Conclusion:**
- 
-In this project “DESIGNING OF CHESS GAME USING COMPUTER GRAPHICS” we presented the classic and standard version of Chess implemented as a GUI. We successfully created a game using inheritance, templates, Artificial Intelligence and a OpenGL Library. The project had two aims, all of them which were achieved. The aims of the project were important as they identified what the project was trying to achieve. Their aims were:
+   ```bash
+   yarn install
+   ```
 
-● 
-First aim is to allow two users or players to play the game interactively from remote locations.
+3. **Run the Application**
 
-●
-The second aim is that the java program for the chess game should be working properly and allow the users to play the game.
+   ```bash
+   npm start
+   ```
 
-The planning for the project was very well carried out as it initially had two weeks of slack available. This allowed for leniency if any task took longer than anticipated. All asks were completed in the order they were anticipated.
+   Or with yarn:
 
-In conclusion, the project successfully demonstrates the implementation of a 3D chess game using OpenGL graphics. Through a combination of user-defined functions, OpenGL libraries, and game logic, the program creates an interactive and visually appealing chess experience.
+   ```bash
+   yarn start
+   ```
 
-Through the integration of OpenGL graphics and user interface design, the project achieves its objective of creating an engaging and immersive chess game environment. By leveraging OpenGL's capabilities for rendering 3D graphics and handling user input, the project showcases the versatility and power of OpenGL in game development.
+4. **Open in Browser**
 
-**Key features of the project include:**
+   Navigate to `http://localhost:3000` in your web browser to start playing.
 
-● ● ●
-●
-● ●● ● ●
-●
-● ●● ● ●
-●
-● ●● ● ●
-●
-● ●●
-● ●
+## Usage
 
-Rendering a 3D chessboard with alternating dark and light squares.
+After launching the application:
 
-Representing chess pieces as 3D models on the board.
+1. **Start a New Game**: Click on the "New Game" button to begin.
+2. **Choose Game Mode**: Select between playing against the AI or another player.
+3. **Customize Settings**: Adjust game settings like difficulty level, themes, and board orientation.
+4. **Make Moves**: Click and drag pieces to move them. Possible moves are highlighted for assistance.
+5. **Pause & Save**: Pause the game at any time and save your progress.
+6. **View Game History**: Access the move history to review past moves.
 
-Allowing players to interact with the game through keyboard inputs, including selecting pieces, moving them, and navigating the board.
-Implementing standard chess rules for piece movement, capturing, and special moves like castling and pawn promotion.
+## Technologies Used
 
-Providing visual feedback through highlighted valid moves, check, and checkmate notifications. Enabling game restart and exit functionality for a seamless user experience.
-project serves as a foundation for further exploration and development in the realm of 3D chess games.
+- **Frontend**:
+  - [React](https://reactjs.org/) - JavaScript library for building user interfaces.
+  - [Three.js](https://threejs.org/) - 3D graphics library for rendering the chessboard and pieces.
+  - [Redux](https://redux.js.org/) - State management.
+  - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework for styling.
 
+- **Backend**:
+  - [Node.js](https://nodejs.org/) - JavaScript runtime.
+  - [Express](https://expressjs.com/) - Web framework for handling API requests.
+  - [Socket.io](https://socket.io/) - Real-time communication for multiplayer features.
 
+- **Other Tools**:
+  - [Webpack](https://webpack.js.org/) - Module bundler.
+  - [Babel](https://babeljs.io/) - JavaScript compiler.
+  - [ESLint](https://eslint.org/) - Linting tool for code quality.
+
+## Contributing
+
+Contributions are welcome! Please follow these steps to contribute:
+
+1. **Fork the Repository**
+
+2. **Create a Feature Branch**
+
+   ```bash
+   git checkout -b feature/YourFeature
+   ```
+
+3. **Commit Your Changes**
+
+   ```bash
+   git commit -m "Add YourFeature"
+   ```
+
+4. **Push to the Branch**
+
+   ```bash
+   git push origin feature/YourFeature
+   ```
+
+5. **Open a Pull Request**
+
+Please ensure your code follows the project's coding standards and includes relevant tests.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Contact
+
+- **Author**: [Your Name](https://github.com/yxshee)
+- **Email**: yash999901@gmail.com
+
+Feel free to reach out for any inquiries or feedback!
+
+## Acknowledgements
+
+- Inspired by classic chess and modern 3D gaming technologies.
+- Special thanks to the open-source community for providing the tools and libraries used in this project.
+- [Chess.com](https://www.chess.com/) for being a source of inspiration and learning.
