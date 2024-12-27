@@ -1,14 +1,13 @@
 
 # User Interactive 3D Chess
 
-![3D Chess Banner](https://github.com/yxshee/user-interactive-3D-chess/blob/main/assets/banner.png)
+![3D Chess Banner](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTRzNzBsMzE5a3g3aDg1ZXc4ZGVqcm5iazlscDU2c3k4ZDZ0bTN6byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/UuGS3TTbKRnCu80TM8/giphy.gif)
 
 Welcome to **User Interactive 3D Chess**, a modern take on the classic game of chess, enhanced with immersive 3D graphics and intuitive user interactions. Whether you're a chess enthusiast or a casual player, our application offers a captivating and engaging experience.
 
 ## Table of Contents
 
 - [Features](#features)
-- [Preview](#preview)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Technologies Used](#technologies-used)
@@ -28,11 +27,7 @@ Welcome to **User Interactive 3D Chess**, a modern take on the classic game of c
 - **Save & Load**: Easily save your game progress and resume anytime.
 - **Responsive Design**: Compatible with desktops, tablets, and smartphones for on-the-go play.
 
-## Preview
 
-
-
-![Gameplay Screenshot](https://github.com/yxshee/user-interactive-3D-chess/blob/main/assets/screenshot.png)
 
 ## Installation
 
