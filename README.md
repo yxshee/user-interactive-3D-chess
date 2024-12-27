@@ -8,7 +8,7 @@ Welcome to **User Interactive 3D Chess**, a modern take on the classic game of c
 ## Table of Contents
 
 - [Features](#features)
-- [Demo](#demo)
+- [Preview](#preview)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Technologies Used](#technologies-used)
@@ -28,9 +28,9 @@ Welcome to **User Interactive 3D Chess**, a modern take on the classic game of c
 - **Save & Load**: Easily save your game progress and resume anytime.
 - **Responsive Design**: Compatible with desktops, tablets, and smartphones for on-the-go play.
 
-## Demo
+## Preview
 
-Check out a live demo of the application [here](https://yxshee.github.io/user-interactive-3D-chess).
+
 
 ![Gameplay Screenshot](https://github.com/yxshee/user-interactive-3D-chess/blob/main/assets/screenshot.png)
 
