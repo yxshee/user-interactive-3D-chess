@@ -143,7 +143,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
-- **Author**: [Your Name](https://github.com/yxshee)
+- **Author**: [Yash Dogra](https://github.com/yxshee)
 - **Email**: yash999901@gmail.com
 
 Feel free to reach out for any inquiries or feedback!
