@@ -138,3 +138,46 @@ After launching the application, follow these steps:
 We welcome contributions! To contribute:
 
 1. Fork the Repository.
+
+2. Create a Feature Branch:
+   
+   git checkout -b feature/YourFeature
+   
+
+3. Commit Your Changes:
+   
+   git commit -m "Add YourFeature"
+   
+
+4. Push to the Branch:
+   
+   git push origin feature/YourFeature
+   
+
+5. Open a Pull Request:  
+   Ensure your code adheres to our coding standards and includes appropriate tests.
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 📫 Contact
+
+- Author: [Yash Dogra](https://github.com/yxshee)  
+- Email: yash999901@gmail.com
+
+Feel free to reach out for any inquiries, suggestions, or collaborations!
+
+---
+
+## 🙏 Acknowledgements
+
+- Inspired by the timeless game of chess and cutting-edge 3D gaming technology.
+- A special thanks to the open-source community for the amazing tools and libraries.
+- [Chess.com](https://www.chess.com/) – For ongoing inspiration and learning.
+
+---
