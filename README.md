@@ -1,190 +1,75 @@
-
-
-<p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTRzNzBsMzE5a3g3aDg1ZXc4ZGVqcm5iazlscDU2c3k4ZDZ0bTN6byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/UuGS3TTbKRnCu80TM8/giphy.gif" alt="3D Chess Banner" width="700"/>
-</p>
-
-<h1 align="center">👑 User Interactive 3D Chess 👑</h1>
+<h1 align="center">User Interactive 3D Chess</h1>
 
 <p align="center">
-  <em>An immersive, visually stunning chess experience like never before.</em>
+  Two-player chess on a 3D board, written in C++ with OpenGL and GLUT.
 </p>
 
----
+<p align="center">
+  <img src="docs/screenshot.png" alt="The 3D chess board at the start of a game" width="640"/>
+</p>
 
-## 🌟 **Overview**
-
-Dive into the captivating world of chess, elevated through breathtaking **3D graphics**, intuitive user interactions, and dynamic gameplay. Whether you’re a seasoned player or new to chess, this platform redefines how you experience the timeless classic.
-
----
-
-## 🚀 **Quick Navigation**
-
-- 📌 [Features](#-features)
-- 📥 [Installation](#-installation)
-- 🎮 [How to Play](#-how-to-play)
-- 💻 [Tech Stack](#-tech-stack)
-- 🛠️ [Contribute](#️-contribute)
-- 📜 [License](#-license)
-- 📬 [Contact](#-contact)
-- 🙌 [Acknowledgements](#-acknowledgements)
-
----
-
-## 🎯 **Features**
-
-- 🎲 **Immersive 3D Gameplay**
-  - Stunning visuals and detailed 3D chess sets.
-  - Smooth animations and realistic interactions.
-
-- 🤝 **Multiplayer Experience**
-  - Challenge friends locally or play online with real-time matches.
-
-- 🤖 **AI-Powered Opponent**
-  - Adjustable difficulty to match your skill level.
-
-- 🎨 **Fully Customizable**
-  - Personalize your game with multiple themes, chess piece styles, and board aesthetics.
-
-- 📱 **Responsive Design**
-  - Enjoy seamless gameplay across desktops, tablets, and smartphones.
-
-- 💾 **Save and Resume**
-  - Effortlessly save your games and continue later.
-
-- 📜 **Game History**
-  - Review moves and strategies with a detailed move history panel.
-
----
-
-## 📥 **Installation**
-
-### ⚙️ **Prerequisites**
-Ensure you have the following installed:
-
-- [Node.js](https://nodejs.org/) (v14 or higher)
-- npm or yarn
-
-### 🛠️ **Getting Started**
+## Quick start
 
 ```bash
-# Clone the repository
 git clone https://github.com/yxshee/user-interactive-3D-chess.git
-
-# Navigate to project directory
 cd user-interactive-3D-chess
-
-# Install dependencies
-npm install
-# or with yarn
-yarn install
-
-# Start the application
-npm start
-# or with yarn
-yarn start
+make run
 ```
 
-### 🌐 **Access the Application**
-Open your browser and navigate to: [http://localhost:3000](http://localhost:3000)  
-Enjoy your enhanced 3D chess experience! 🌟
+`make` builds a `./chess` binary, and `make run` builds it and starts a game. Run it from the repository root, because the piece models are loaded from `model/` at startup.
 
----
+### Requirements
 
-## 🎮 **How to Play**
+You need a C++11 compiler and the OpenGL/GLUT development headers.
 
-Follow these simple steps:
+| Platform | Install |
+|---|---|
+| Ubuntu / Debian | `sudo apt install g++ make freeglut3-dev` |
+| Fedora | `sudo dnf install gcc-c++ make freeglut-devel` |
+| macOS | Xcode Command Line Tools (`xcode-select --install`). GLUT and OpenGL ship with macOS. |
 
-1. **🎲 New Game**  
-   Click "New Game" to start fresh.
+Without `make`, the same build is:
 
-2. **⚔️ Choose Your Mode**  
-   Select between AI or multiplayer gameplay.
+```bash
+# Linux
+g++ -std=c++11 -O2 -o chess main.cpp Model.cpp Chess/*.cpp -lGL -lGLU -lglut
+# macOS
+clang++ -std=c++11 -O2 -DGL_SILENCE_DEPRECATION -o chess main.cpp Model.cpp Chess/*.cpp -framework OpenGL -framework GLUT
+```
 
-3. **🎛️ Customize Your Experience**  
-   Adjust difficulty, themes, and board styles as desired.
+## Playing
 
-4. **♟️ Making Moves**  
-   Click and drag chess pieces—potential moves highlight automatically.
+Press `N` to start. Two players share the keyboard and take turns, White first.
 
-5. **⏸️ Pause & Save**  
-   Save games anytime; resume your match seamlessly later.
+| Key | Action |
+|:---:|---|
+| `W` `A` `S` `D` | Move the cursor (the highlighted square) |
+| `Space` | Select a piece, move it to the highlighted square, or cancel the selection |
+| Arrow `Left` / `Right` | Rotate the camera around the board |
+| Arrow `Up` / `Down` | Zoom out / in |
+| `N` | Start a new game (`O` to confirm, `X` to cancel) |
+| `Q` `R` `B` `K` | Promote a pawn to Queen, Rook, Bishop or Knight |
+| `X` | Close the game after checkmate |
 
-6. **📖 Review Moves**  
-   Analyze previous moves in the interactive game history panel.
+When a piece is selected, the squares it can legally move to are highlighted. The game detects check and checkmate. Stalemate and draws are not implemented yet. See [Rules.md](Rules.md) for details.
 
----
+A longer recording of a game is in [chess-game-demo.gif](chess-game-demo.gif).
 
-## 💻 **Tech Stack**
+## How it is built
 
-### 🌐 **Frontend**
+| Path | What it does |
+|---|---|
+| `main.cpp` | Window, camera, lighting, input handling and drawing of the board and pieces (GLUT) |
+| `Model.cpp`, `Model.h` | Minimal Wavefront `.obj`/`.mtl` loader for the piece meshes |
+| `model/` | The six piece models (`King.obj`, `Queen.obj`, ...) |
+| `Chess/` | Game logic with no OpenGL dependency: board, pieces, move generation, check/checkmate (`Gameplay.cpp`), turn and game state (`Game.cpp`) |
 
-- [React](https://reactjs.org/) – Dynamic UI components.
-- [Three.js](https://threejs.org/) – Realistic 3D graphics.
-- [Redux](https://redux.js.org/) – Efficient state management.
-- [Tailwind CSS](https://tailwindcss.com/) – Fast and responsive styling.
+## Contributing
 
-### 🖥️ **Backend**
+Issues and pull requests are welcome. Good first changes are stalemate detection in `Chess/Gameplay.cpp`, a draw rule, and mouse picking for selecting squares.
 
-- [Node.js](https://nodejs.org/) – Server-side logic.
-- [Express.js](https://expressjs.com/) – Robust backend APIs.
-- [Socket.io](https://socket.io/) – Real-time multiplayer connectivity.
+## Credits and license
 
-### ⚙️ **Build & Quality Tools**
+This project builds on [3d-chess-opengl](https://github.com/stevenalbert/3d-chess-opengl) by Steven Albert (2018), released under the MIT License. See [LICENSE](LICENSE).
 
-- [Webpack](https://webpack.js.org/) – Module bundling.
-- [Babel](https://babeljs.io/) – JavaScript compiling.
-- [ESLint](https://eslint.org/) – Code quality assurance.
-
----
-
-## 🛠️ **Contribute**
-
-Your ideas and contributions are welcomed! Follow these easy steps:
-
-1. 🍴 **Fork** the repository.
-2. 🌳 **Create** a feature branch:
-   ```bash
-   git checkout -b feature/YourFeature
-   ```
-3. 💡 **Commit** your changes:
-   ```bash
-   git commit -m "Add YourFeature"
-   ```
-4. 🚀 **Push** your branch:
-   ```bash
-   git push origin feature/YourFeature
-   ```
-5. 📩 **Open** a pull request!
-
----
-
-## 📜 **License**
-
-Licensed under the [MIT License](LICENSE).  
-See the license file for more details.
-
----
-
-## 📬 **Contact**
-
-- **Author:** [Yash Dogra](https://github.com/yxshee)
-- **Email:** yash999901@gmail.com  
-
-✨ Feel free to connect for any feedback, collaboration, or inquiries!
-
----
-
-## 🙌 **Acknowledgements**
-
-- Inspired by the timeless charm of chess and advanced 3D gaming technologies.
-- Special gratitude to the open-source community and countless contributors.
-- [Chess.com](https://www.chess.com/) for endless inspiration.
-
----
-
-<p align="center">
-  <strong>Enjoy your immersive chess experience! 🏆♟️✨</strong>
-</p>
-
----
+Maintained by [Yash Dogra](https://github.com/yxshee) (yash999901@gmail.com).
