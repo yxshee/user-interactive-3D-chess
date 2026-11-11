@@ -49,9 +49,9 @@ Press `N` to start. Two players share the keyboard and take turns, White first.
 | Arrow `Up` / `Down` | Zoom out / in |
 | `N` | Start a new game (`O` to confirm, `X` to cancel) |
 | `Q` `R` `B` `K` | Promote a pawn to Queen, Rook, Bishop or Knight |
-| `X` | Close the game after checkmate |
+| `X` | Close the game after checkmate or stalemate |
 
-When a piece is selected, the squares it can legally move to are highlighted. The game detects check and checkmate. Stalemate and draws are not implemented yet. See [Rules.md](Rules.md) for details.
+When a piece is selected, the squares it can legally move to are highlighted. The game detects check, checkmate and stalemate. The other draw rules (threefold repetition, the fifty-move rule and insufficient material) are not implemented yet. See [Rules.md](Rules.md) for details.
 
 A longer recording of a game is in [chess-game-demo.gif](chess-game-demo.gif).
 
@@ -66,7 +66,7 @@ A longer recording of a game is in [chess-game-demo.gif](chess-game-demo.gif).
 
 ## Contributing
 
-Issues and pull requests are welcome. Good first changes are stalemate detection in `Chess/Gameplay.cpp`, a draw rule, and mouse picking for selecting squares.
+Issues and pull requests are welcome. Good first changes are a draw rule (threefold repetition or the fifty-move rule) in `Chess/Gameplay.cpp`, and mouse picking for selecting squares.
 
 ## Credits and license
 

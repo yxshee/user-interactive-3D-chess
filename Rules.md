@@ -8,12 +8,12 @@
 ### State
 - `Check` - When `King` is under immediate attack of opponent's piece
 - `Checkmate` - `Check` state without valid move left for the player to make the `King` un-`Check`-ed
-- `Stalemate` - Not in `Check` state but can't move other than move to the `Check` itself (*not implemented*)
+- `Stalemate` - Not in `Check` state but can't move other than move to the `Check` itself. The game ends in a draw
 
 ### Result
 - `Win` - The player who gives `Checkmate` to opponent
 - `Lose` - The player who got `Checkmate`
-- `Draw` - There is no winner (*not implemented*)
+- `Draw` - There is no winner. Stalemate is detected; threefold repetition, the fifty-move rule and insufficient material are *not implemented*
 
 ## Game Control
 |Key|Action|
@@ -25,7 +25,7 @@
 |`D`|Move cursor right 1 step|
 |`Space`|Select piece<br>Move piece<br>Cancel move|
 |`O`|Approve `start new game`|
-|`X`|Close game after `checkmate`<br>Cancel `start new game`|
+|`X`|Close game after `checkmate` or `stalemate`<br>Cancel `start new game`|
 |`Q`|Promote to `Queen`|
 |`R`|Promote to `Rook`|
 |`B`|Promote to `Bishop`|
