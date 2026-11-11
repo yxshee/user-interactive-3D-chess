@@ -135,12 +135,16 @@ void showWord( int x, int y, string word)
     int l,i;
 
     l=word.length(); // see how many characters are in text string.
-    glRasterPos2i(x, y); // location to start printing text
+    /* Bitmap text takes its colour at the moment the raster position is set,
+       and it must not be shaded by the scene light. */
+    glDisable(GL_LIGHTING);
     glColor3f(1,1,0);
+    glRasterPos2i(x, y); // location to start printing text
     for( i=0; i < l; i++) // loop until i is greater then l
     {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, word[i]); // Print a character on the screen
     }
+    glEnable(GL_LIGHTING);
 }
 
 /**
