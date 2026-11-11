@@ -230,6 +230,139 @@ static void testPromotion()
     CHECK(!game.promote(1, 5, PieceType::QUEEN));   // only pawns promote
 }
 
+static void testQueensideCastling()
+{
+    Game game;
+    clearBoard(game);
+    put(game, 1, 5, PieceType::KING, PieceColor::WHITE);
+    put(game, 1, 1, PieceType::ROOK, PieceColor::WHITE);
+    put(game, 8, 5, PieceType::KING, PieceColor::BLACK);
+    CHECK(hasMove(game, 1, 5, 1, 3, MoveType::CASTLING));
+    CHECK(play(game, 1, 5, 1, 3));
+    CHECK(game.getPiece(1, 3)->getType() == PieceType::KING);
+    CHECK(game.getPiece(1, 4)->getType() == PieceType::ROOK);
+    CHECK(!game.isSquareOccupied(1, 1));
+}
+
+static void testQueensideCastlingNeedsAnEmptyKnightSquare()
+{
+    Game game;
+    clearBoard(game);
+    put(game, 1, 5, PieceType::KING, PieceColor::WHITE);
+    put(game, 1, 1, PieceType::ROOK, PieceColor::WHITE);
+    put(game, 1, 2, PieceType::KNIGHT, PieceColor::WHITE);
+    put(game, 8, 5, PieceType::KING, PieceColor::BLACK);
+    CHECK(countMovesOfType(game, 1, 5, MoveType::CASTLING) == 0);
+}
+
+static void testNoCastlingWithoutARook()
+{
+    Game game;
+    clearBoard(game);
+    put(game, 1, 5, PieceType::KING, PieceColor::WHITE);
+    put(game, 8, 5, PieceType::KING, PieceColor::BLACK);
+    CHECK(countMovesOfType(game, 1, 5, MoveType::CASTLING) == 0);
+
+    put(game, 1, 1, PieceType::BISHOP, PieceColor::BLACK);   // enemy piece on the corner
+    CHECK(countMovesOfType(game, 1, 5, MoveType::CASTLING) == 0);
+}
+
+static void testNoCastlingOutOfCheck()
+{
+    Game game;
+    clearBoard(game);
+    put(game, 1, 5, PieceType::KING, PieceColor::WHITE);
+    put(game, 1, 8, PieceType::ROOK, PieceColor::WHITE);
+    put(game, 8, 5, PieceType::ROOK, PieceColor::BLACK);     // checks the king on the e-file
+    put(game, 8, 1, PieceType::KING, PieceColor::BLACK);
+    CHECK(game.inCheckState());
+    CHECK(countMovesOfType(game, 1, 5, MoveType::CASTLING) == 0);
+}
+
+static void testNoCastlingThroughAnAttackedSquare()
+{
+    Game game;
+    clearBoard(game);
+    put(game, 1, 5, PieceType::KING, PieceColor::WHITE);
+    put(game, 1, 8, PieceType::ROOK, PieceColor::WHITE);
+    put(game, 8, 6, PieceType::ROOK, PieceColor::BLACK);     // attacks f1, the square the king crosses
+    put(game, 8, 1, PieceType::KING, PieceColor::BLACK);
+    CHECK(!game.inCheckState());
+    CHECK(countMovesOfType(game, 1, 5, MoveType::CASTLING) == 0);
+}
+
+static void testCastlingIsAllowedWhenOnlyTheRookPathIsAttacked()
+{
+    Game game;
+    clearBoard(game);
+    put(game, 1, 5, PieceType::KING, PieceColor::WHITE);
+    put(game, 1, 1, PieceType::ROOK, PieceColor::WHITE);
+    put(game, 8, 2, PieceType::ROOK, PieceColor::BLACK);     // attacks b1, which only the rook crosses
+    put(game, 8, 8, PieceType::KING, PieceColor::BLACK);
+    CHECK(hasMove(game, 1, 5, 1, 3, MoveType::CASTLING));
+}
+
+static void testCapturedRookLosesItsCastlingRight()
+{
+    Game game;
+    clearBoard(game);
+    put(game, 1, 5, PieceType::KING, PieceColor::WHITE);
+    put(game, 1, 8, PieceType::ROOK, PieceColor::WHITE);
+    put(game, 2, 1, PieceType::PAWN, PieceColor::WHITE);
+    put(game, 2, 7, PieceType::BISHOP, PieceColor::BLACK);
+    put(game, 8, 5, PieceType::KING, PieceColor::BLACK);
+    CHECK(play(game, 2, 1, 3, 1));          // a2-a3
+    CHECK(play(game, 2, 7, 1, 8));          // bishop takes the rook on h1
+    CHECK(game.getGameStatus()->isLastColRookMove(PieceColor::WHITE));
+    CHECK(countMovesOfType(game, 1, 5, MoveType::CASTLING) == 0);
+}
+
+static void testRookOnAnotherRankDoesNotSpendTheOtherCastlingRight()
+{
+    Game game;
+    clearBoard(game);
+    put(game, 1, 5, PieceType::KING, PieceColor::WHITE);
+    put(game, 1, 1, PieceType::ROOK, PieceColor::WHITE);
+    put(game, 1, 8, PieceType::ROOK, PieceColor::WHITE);
+    put(game, 8, 5, PieceType::KING, PieceColor::BLACK);
+    CHECK(play(game, 1, 8, 5, 8));          // Rh1-h5
+    CHECK(play(game, 8, 5, 8, 4));          // Ke8-d8
+    CHECK(play(game, 5, 8, 5, 1));          // Rh5-a5, now on the a-file but not on a1
+    CHECK(play(game, 8, 4, 8, 5));          // Kd8-e8
+    CHECK(play(game, 5, 1, 5, 2));          // Ra5-b5
+    CHECK(play(game, 8, 5, 8, 4));          // Ke8-d8
+    CHECK(hasMove(game, 1, 5, 1, 3, MoveType::CASTLING));    // the a1 rook never moved
+    CHECK(!hasMove(game, 1, 5, 1, 7, MoveType::CASTLING));   // the h1 rook did
+}
+
+static void testStalemateIsNotCheckmate()
+{
+    Game game;
+    clearBoard(game);
+    noCastling(game);
+    put(game, 8, 1, PieceType::KING, PieceColor::BLACK);     // a8
+    put(game, 6, 2, PieceType::QUEEN, PieceColor::WHITE);    // b6
+    put(game, 7, 3, PieceType::KING, PieceColor::WHITE);     // c7
+    game.nextTurn();                                         // Black to move
+    CHECK(game.getTurnColor() == PieceColor::BLACK);
+    CHECK(legalMoveCount(game) == 0);
+    CHECK(!game.inCheckState());
+    CHECK(game.inStaleMateState());
+    CHECK(!game.inCheckMateState());
+}
+
+static void testCheckmateIsNotStalemate()
+{
+    Game game;
+    CHECK(!game.inStaleMateState());
+    CHECK(play(game, 2, 6, 3, 6));          // f2-f3
+    CHECK(play(game, 7, 5, 5, 5));          // e7-e5
+    CHECK(play(game, 2, 7, 4, 7));          // g2-g4
+    CHECK(play(game, 8, 4, 4, 8));          // Qd8-h4 mate
+    CHECK(game.inCheckMateState());
+    CHECK(!game.inStaleMateState());
+}
+
 int main()
 {
     testStartPosition();
@@ -243,6 +376,16 @@ int main()
     testKingsideCastling();
     testNoCastlingAfterTheKingHasMoved();
     testPromotion();
+    testQueensideCastling();
+    testQueensideCastlingNeedsAnEmptyKnightSquare();
+    testNoCastlingWithoutARook();
+    testNoCastlingOutOfCheck();
+    testNoCastlingThroughAnAttackedSquare();
+    testCastlingIsAllowedWhenOnlyTheRookPathIsAttacked();
+    testCapturedRookLosesItsCastlingRight();
+    testRookOnAnotherRankDoesNotSpendTheOtherCastlingRight();
+    testStalemateIsNotCheckmate();
+    testCheckmateIsNotStalemate();
 
     std::printf("%d checks, %d failures\n", checks, failures);
     return failures == 0 ? 0 : 1;

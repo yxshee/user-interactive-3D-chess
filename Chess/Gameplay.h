@@ -18,8 +18,12 @@ class Gameplay
 		std::vector<Move> getValidMoves(GameStatus* status, Board* board, Piece* piece, int fromRow, int fromCol);
 		bool isCheckState(GameStatus* status, Board* board, PieceColor color);
 		bool isCheckMateState(GameStatus* status, Board* board, PieceColor color);
+		bool isStaleMateState(GameStatus* status, Board* board, PieceColor color);
 		int allValidMoveCount(GameStatus* status, Board* board, PieceColor color);
 		bool pawnPromotion(Board* board, int row, int col, PieceType promoteTo);
+	private:
+		void markRookLeftCorner(GameStatus* status, Board* board, PieceColor color, int row, int col);
+		bool isOwnRook(Board* board, int row, int col, PieceColor color);
 };
 
 #endif
