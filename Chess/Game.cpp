@@ -95,6 +95,11 @@ bool Game::inCheckMateState()
 	return gameplay->isCheckMateState(status, board, getTurnColor());
 }
 
+bool Game::inStaleMateState()
+{
+	return gameplay->isStaleMateState(status, board, getTurnColor());
+}
+
 int Game::getTurn()
 {
 	return turn;

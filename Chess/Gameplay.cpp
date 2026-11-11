@@ -20,10 +20,7 @@ bool Gameplay::move(GameStatus* status, Board* board, Move move)
 			else if(actPiece->getType()==PieceType::KING)
 				status->setKingMove(actPiece->getColor());
 			else if(actPiece->getType()==PieceType::ROOK)
-			{
-				if(fromCol == board->MIN_COL_INDEX) status->setFirstColRookMove(actPiece->getColor());
-				else if(fromCol == board->MAX_COL_INDEX) status->setLastColRookMove(actPiece->getColor());
-			}
+				markRookLeftCorner(status, board, actPiece->getColor(), fromRow, fromCol);
 			return board->getSquare(toRow, toCol)->occupySquare(board->getSquare(fromRow, fromCol)->removeOccupyingPiece());
 		}
 		case MoveType::CAPTURE:
@@ -31,10 +28,11 @@ bool Gameplay::move(GameStatus* status, Board* board, Move move)
 			if(actPiece->getType()==PieceType::KING)
 				status->setKingMove(actPiece->getColor());
 			else if(actPiece->getType()==PieceType::ROOK)
-			{
-				if(fromCol == board->MIN_COL_INDEX) status->setFirstColRookMove(actPiece->getColor());
-				else if(fromCol == board->MAX_COL_INDEX) status->setLastColRookMove(actPiece->getColor());
-			}
+				markRookLeftCorner(status, board, actPiece->getColor(), fromRow, fromCol);
+			/* A rook captured on its own corner can no longer castle */
+			Piece* captured = board->getSquare(toRow, toCol)->getOccupyingPiece();
+			if(captured != NULL && captured->getType()==PieceType::ROOK)
+				markRookLeftCorner(status, board, captured->getColor(), toRow, toCol);
 			board->getSquare(toRow, toCol)->removeOccupyingPiece();
 			return board->getSquare(toRow, toCol)->occupySquare(board->getSquare(fromRow, fromCol)->removeOccupyingPiece());
 		}
@@ -56,6 +54,21 @@ bool Gameplay::move(GameStatus* status, Board* board, Move move)
 		default: break;
 	}
 	return false;
+}
+
+void Gameplay::markRookLeftCorner(GameStatus* status, Board* board, PieceColor color, int row, int col)
+{
+	int homeRow = (color==PieceColor::WHITE)? board->MIN_ROW_INDEX : board->MAX_ROW_INDEX;
+	if(row != homeRow) return;
+	if(col == board->MIN_COL_INDEX) status->setFirstColRookMove(color);
+	else if(col == board->MAX_COL_INDEX) status->setLastColRookMove(color);
+}
+
+bool Gameplay::isOwnRook(Board* board, int row, int col, PieceColor color)
+{
+	if(!board->getSquare(row, col)->occupiedState()) return false;
+	Piece* corner = board->getSquare(row, col)->getOccupyingPiece();
+	return corner->getType()==PieceType::ROOK && corner->getColor()==color;
 }
 
 std::vector<Move> Gameplay::getPossibleMoves(GameStatus* status, Board* board, Piece* piece, int fromRow, int fromCol)
@@ -812,15 +825,22 @@ std::vector<Move> Gameplay::getPossibleMoves(GameStatus* status, Board* board, P
 			/*
 				CASTLING
 			*/
-			if(!status->isKingMove(piece->getColor()) && !status->isFirstColRookMove(piece->getColor()))
+			int homeRow = (piece->getColor()==PieceColor::WHITE)? board->MIN_ROW_INDEX : board->MAX_ROW_INDEX;
+			int kingHomeCol = board->MIN_COL_INDEX + 4;
+			if(fromRow == homeRow && fromCol == kingHomeCol && !status->isKingMove(piece->getColor()))
 			{
-				if(!board->getSquare(fromRow, fromCol-1)->occupiedState() && !board->getSquare(fromRow, fromCol-2)->occupiedState())
-					possibleMove.push_back(Move(MoveType::CASTLING, fromRow, fromCol, fromRow, fromCol-2, piece));
-			}
-			if(!status->isKingMove(piece->getColor()) && !status->isLastColRookMove(piece->getColor()))
-			{
-				if(!board->getSquare(fromRow, fromCol+1)->occupiedState() && !board->getSquare(fromRow, fromCol+2)->occupiedState())
-					possibleMove.push_back(Move(MoveType::CASTLING, fromRow, fromCol, fromRow, fromCol+2, piece));
+				/* Queen side: the three squares between king and rook must be empty */
+				if(!status->isFirstColRookMove(piece->getColor()) && isOwnRook(board, homeRow, board->MIN_COL_INDEX, piece->getColor()))
+				{
+					if(!board->getSquare(fromRow, fromCol-1)->occupiedState() && !board->getSquare(fromRow, fromCol-2)->occupiedState() && !board->getSquare(fromRow, fromCol-3)->occupiedState())
+						possibleMove.push_back(Move(MoveType::CASTLING, fromRow, fromCol, fromRow, fromCol-2, piece));
+				}
+				/* King side: the two squares between king and rook must be empty */
+				if(!status->isLastColRookMove(piece->getColor()) && isOwnRook(board, homeRow, board->MAX_COL_INDEX, piece->getColor()))
+				{
+					if(!board->getSquare(fromRow, fromCol+1)->occupiedState() && !board->getSquare(fromRow, fromCol+2)->occupiedState())
+						possibleMove.push_back(Move(MoveType::CASTLING, fromRow, fromCol, fromRow, fromCol+2, piece));
+				}
 			}
 
 			break;
@@ -839,7 +859,24 @@ std::vector<Move> Gameplay::getValidMoves(GameStatus* status, Board* board, Piec
 		Board* nextBoard = new Board(*board);
 		GameStatus* nextStatus = new GameStatus(*status);
 		move(nextStatus, nextBoard, validMoves[index]);
-		if(isCheckState(nextStatus, nextBoard, piece->getColor()))
+		bool illegal = isCheckState(nextStatus, nextBoard, piece->getColor());
+
+		/* Castling is also illegal out of check and through an attacked square */
+		if(!illegal && validMoves[index].getType() == MoveType::CASTLING)
+		{
+			int toCol = validMoves[index].getDestinationPosition().second;
+			int stepCol = (toCol > fromCol)? fromCol+1 : fromCol-1;
+			illegal = isCheckState(status, board, piece->getColor());
+			if(!illegal)
+			{
+				Board* stepBoard = new Board(*board);
+				stepBoard->getSquare(fromRow, stepCol)->occupySquare(stepBoard->getSquare(fromRow, fromCol)->removeOccupyingPiece());
+				illegal = isCheckState(status, stepBoard, piece->getColor());
+				delete(stepBoard);
+			}
+		}
+
+		if(illegal)
 		{
 			validMoves.erase(validMoves.begin()+index);
 			sz--;
@@ -897,7 +934,12 @@ bool Gameplay::isCheckState(GameStatus* status, Board* board, PieceColor color)
 
 bool Gameplay::isCheckMateState(GameStatus* status, Board* board, PieceColor color)
 {
-	return allValidMoveCount(status, board, color)==0;
+	return allValidMoveCount(status, board, color)==0 && isCheckState(status, board, color);
+}
+
+bool Gameplay::isStaleMateState(GameStatus* status, Board* board, PieceColor color)
+{
+	return allValidMoveCount(status, board, color)==0 && !isCheckState(status, board, color);
 }
 
 int Gameplay::allValidMoveCount(GameStatus* status, Board* board, PieceColor color)

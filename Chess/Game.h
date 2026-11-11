@@ -30,6 +30,7 @@ class Game
 		bool isSquareOccupied(int fromRow, int fromCol);
 		bool inCheckState();
 		bool inCheckMateState();
+		bool inStaleMateState();
 		int getTurn();
 		void nextTurn();
 		PieceColor getTurnColor();

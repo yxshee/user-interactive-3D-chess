@@ -1,5 +1,7 @@
 #include <string>
 #include <vector>
+#include <cstdlib>
+#include <cstdio>
 using namespace std;
 
 #ifdef __APPLE__
@@ -58,6 +60,8 @@ GLfloat mat_specular[] = {0.1, 0.1, 0.1, 1.0};
     Variables for managing view
 */
 GLfloat     screen_ratio, zoomOut = 2;
+#define ZOOM_MIN 1.0f
+#define ZOOM_MAX 4.0f
 
 /**
     Model Loading
@@ -89,8 +93,7 @@ int     moveToRow = 1, moveToCol = 1;
 bool    selected = false;
 bool    board_rotating = true;
 int     rotation = 0;
-bool    check = false, checkMate = false;
-bool    closeGame = false;
+bool    check = false, checkMate = false, staleMate = false;
 bool	needPromote = false;
 
 /**
@@ -114,6 +117,13 @@ GLfloat     chessBoard[12][3] = {{-4.0, -4.0, 0.5},
 
 /**
 */
+bool gameOver()
+{
+    return checkMate || staleMate;
+}
+
+/**
+*/
 void showWord( int x, int y, string word)
 {
     glMatrixMode(GL_PROJECTION);
@@ -125,12 +135,16 @@ void showWord( int x, int y, string word)
     int l,i;
 
     l=word.length(); // see how many characters are in text string.
-    glRasterPos2i(x, y); // location to start printing text
+    /* Bitmap text takes its colour at the moment the raster position is set,
+       and it must not be shaded by the scene light. */
+    glDisable(GL_LIGHTING);
     glColor3f(1,1,0);
+    glRasterPos2i(x, y); // location to start printing text
     for( i=0; i < l; i++) // loop until i is greater then l
     {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, word[i]); // Print a character on the screen
     }
+    glEnable(GL_LIGHTING);
 }
 
 /**
@@ -490,6 +504,10 @@ void endOfTurn()
 	{
 		checkMate = true;
 	}
+	else if(chess->inStaleMateState())
+	{
+		staleMate = true;
+	}
 	else if(chess->inCheckState())
 	{
 		check = true;
@@ -532,7 +550,7 @@ void displayFunction()
 
         glLightfv(GL_LIGHT0, GL_POSITION, position);
 
-        glRotatef(rotation, 0, 0, 1);
+        glRotatef(rotation + ang, 0, 0, 1);
 
         drawChessBoard();
 
@@ -564,17 +582,29 @@ void displayFunction()
                 showWord(-150, -WINDOW_HEIGHT/2+50, "Do you want to play again?");
                 showWord(-120, -WINDOW_HEIGHT/2+25, "Yes (O)  or  No (X)");
             }
+            if(staleMate)
+            {
+                showWord(-70, WINDOW_HEIGHT/2-24, "STALEMATE!");
+                showWord(-110, WINDOW_HEIGHT/2-50, "The game is a draw.");
+                showWord(-150, -WINDOW_HEIGHT/2+50, "Do you want to play again?");
+                showWord(-120, -WINDOW_HEIGHT/2+25, "Yes (O)  or  No (X)");
+            }
         }
     }
     else
     {
         showWord(-150, 0, "- - Press N to Start The Game - -");
     }
-	if(closeGame)glutExit();
-
     glutSwapBuffers();
+}
 
-    glutPostRedisplay();
+/**
+    Redraw about 60 times per second, but only while the board is turning
+*/
+void timerFunction(int value)
+{
+    if(inGame && board_rotating) glutPostRedisplay();
+    glutTimerFunc(16, timerFunction, 0);
 }
 
 void reshapeFunction(int width, int height)
@@ -588,19 +618,22 @@ void specialFunction(int key, int x, int y)
     switch(key)
     {
         case GLUT_KEY_UP:
-            zoomOut += 0.1;
+            if(zoomOut < ZOOM_MAX) zoomOut += 0.1;
             break;
         case GLUT_KEY_DOWN:
-            zoomOut -= 0.1;
+            if(zoomOut > ZOOM_MIN) zoomOut -= 0.1;
             break;
         case GLUT_KEY_LEFT:
             ang += 5;
+            if(ang >= 360) ang -= 360;
             break;
         case GLUT_KEY_RIGHT:
             ang -= 5;
+            if(ang < 0) ang += 360;
             break;
         default: break;
     }
+    glutPostRedisplay();
 }
 
 void keyFunction(unsigned char key, int x, int y)
@@ -609,22 +642,22 @@ void keyFunction(unsigned char key, int x, int y)
     {
         case 'w':
         case 'W':
-            if(!needPromote && !checkMate && !verify && inGame && !board_rotating) key_W_pressed(chess->getTurnColor());
+            if(!needPromote && !gameOver() && !verify && inGame && !board_rotating) key_W_pressed(chess->getTurnColor());
             break;
         case 'a':
         case 'A':
-            if(!needPromote && !checkMate && !verify && inGame && !board_rotating) key_A_pressed(chess->getTurnColor());
+            if(!needPromote && !gameOver() && !verify && inGame && !board_rotating) key_A_pressed(chess->getTurnColor());
             break;
         case 's':
         case 'S':
-            if(!needPromote && !checkMate && !verify && inGame && !board_rotating) key_S_pressed(chess->getTurnColor());
+            if(!needPromote && !gameOver() && !verify && inGame && !board_rotating) key_S_pressed(chess->getTurnColor());
             break;
         case 'd':
         case 'D':
-            if(!needPromote && !checkMate && !verify && inGame && !board_rotating) key_D_pressed(chess->getTurnColor());
+            if(!needPromote && !gameOver() && !verify && inGame && !board_rotating) key_D_pressed(chess->getTurnColor());
             break;
         case ' ':
-            if(!needPromote && !checkMate && !verify && inGame && !board_rotating)
+            if(!needPromote && !gameOver() && !verify && inGame && !board_rotating)
             {
                 if(selected)
                 {
@@ -656,50 +689,31 @@ void keyFunction(unsigned char key, int x, int y)
         case 'n':
         case 'N':
             if(!inGame)newGame();
-            else verify = true;
+            else if(!needPromote) verify = true;
             break;
         case 'o': case 'O':
-            if(checkMate || verify) {delete chess; newGame(); verify = false;}
+            if(gameOver() || verify) {delete chess; newGame(); verify = false;}
             break;
         case 'x': case 'X':
-			if(checkMate) { closeGame = true; delete chess;}
             if(verify) {verify = false;}
+            else if(gameOver()) { delete chess; chess = NULL; exit(0); }
             break;
 		case 'q': case 'Q':
-			if(needPromote)
-			{
-				chess->promote(moveToRow, moveToCol, PieceType::QUEEN);
-				endOfTurn();
-				break;
-			}
-			else break;
+			if(needPromote && chess->promote(moveToRow, moveToCol, PieceType::QUEEN)) endOfTurn();
+			break;
 		case 'r': case 'R':
-			if(needPromote)
-			{
-				chess->promote(moveToRow, moveToCol, PieceType::ROOK);
-				endOfTurn();
-				break;
-			}
-			else break;
+			if(needPromote && chess->promote(moveToRow, moveToCol, PieceType::ROOK)) endOfTurn();
+			break;
 		case 'b': case 'B':
-			if(needPromote)
-			{
-				chess->promote(moveToRow, moveToCol, PieceType::BISHOP);
-				endOfTurn();
-				break;
-			}
-			else break;
+			if(needPromote && chess->promote(moveToRow, moveToCol, PieceType::BISHOP)) endOfTurn();
+			break;
 		case 'k': case 'K':
-			if(needPromote)
-			{
-				chess->promote(moveToRow, moveToCol, PieceType::KNIGHT);
-				endOfTurn();
-				break;
-			}
-			else break;
+			if(needPromote && chess->promote(moveToRow, moveToCol, PieceType::KNIGHT)) endOfTurn();
+			break;
 
 		default: break;
     }
+    glutPostRedisplay();
 }
 
 void initialize()
@@ -707,7 +721,6 @@ void initialize()
     glClearColor(0.2f, 0.6f, 0.5f, 1.0f);
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_SMOOTH);
     glDepthFunc(GL_LEQUAL);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_NORMALIZE);
@@ -731,11 +744,19 @@ void newGame()
     inGame = true;
     check = false;
     checkMate = false;
+    staleMate = false;
+    needPromote = false;
+    verify = false;
     updateTurn(chess->getTurnColor());
 }
 
 int main(int argc, char *argv[])
 {
+    if(!Pawn.isLoaded() || !Rook.isLoaded() || !Knight.isLoaded() || !Bishop.isLoaded() || !King.isLoaded() || !Queen.isLoaded())
+    {
+        fprintf(stderr, "Could not load the piece models from model/. Run the game from the repository root.\n");
+        return 1;
+    }
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -748,6 +769,7 @@ int main(int argc, char *argv[])
     glutReshapeFunc(reshapeFunction);
     glutKeyboardFunc(keyFunction);
     glutSpecialFunc(specialFunction);
+    glutTimerFunc(16, timerFunction, 0);
     glutMainLoop();
 	return 0;
 }
