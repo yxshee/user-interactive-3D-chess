@@ -67,21 +67,37 @@ Model::Model(std::string objFilePath)
 		}
 	}
     sz = position_texture_normal.size() / 8;
+    listId = 0;
+    compiled = false;
+}
+
+bool Model::isLoaded()
+{
+    return sz > 0;
 }
 
 void Model::Draw()
 {
-    int index;
+    /* The mesh never changes, so send it to OpenGL once and replay it afterwards. */
+    if(!compiled)
+    {
+        int index;
+        listId = glGenLists(1);
+        glNewList(listId, GL_COMPILE);
+            glBegin(GL_TRIANGLES);
+                for(int i=0; i<sz; i++)
+                {
+                    index = 8 * i;
+                    glNormal3f(position_texture_normal[index+5], position_texture_normal[index+6], position_texture_normal[index+7]);
+                    glTexCoord2f(position_texture_normal[index+3], position_texture_normal[index+4]);
+                    glVertex3f(position_texture_normal[index], position_texture_normal[index+1], position_texture_normal[index+2]);
+                }
+            glEnd();
+        glEndList();
+        compiled = true;
+    }
     glPushMatrix();
-        glBegin(GL_TRIANGLES);
-            for(int i=0; i<sz; i++)
-            {
-                index = 8 * i;
-                glNormal3f(position_texture_normal[index+5], position_texture_normal[index+6], position_texture_normal[index+7]);
-                glTexCoord2f(position_texture_normal[index+3], position_texture_normal[index+4]);
-                glVertex3f(position_texture_normal[index], position_texture_normal[index+1], position_texture_normal[index+2]);
-            }
-        glEnd();
+        glCallList(listId);
     glPopMatrix();
 }
 

@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include <cstdio>
 using namespace std;
 
 #ifdef __APPLE__
@@ -59,6 +60,8 @@ GLfloat mat_specular[] = {0.1, 0.1, 0.1, 1.0};
     Variables for managing view
 */
 GLfloat     screen_ratio, zoomOut = 2;
+#define ZOOM_MIN 1.0f
+#define ZOOM_MAX 4.0f
 
 /**
     Model Loading
@@ -543,7 +546,7 @@ void displayFunction()
 
         glLightfv(GL_LIGHT0, GL_POSITION, position);
 
-        glRotatef(rotation, 0, 0, 1);
+        glRotatef(rotation + ang, 0, 0, 1);
 
         drawChessBoard();
 
@@ -589,8 +592,15 @@ void displayFunction()
         showWord(-150, 0, "- - Press N to Start The Game - -");
     }
     glutSwapBuffers();
+}
 
-    glutPostRedisplay();
+/**
+    Redraw about 60 times per second, but only while the board is turning
+*/
+void timerFunction(int value)
+{
+    if(inGame && board_rotating) glutPostRedisplay();
+    glutTimerFunc(16, timerFunction, 0);
 }
 
 void reshapeFunction(int width, int height)
@@ -604,19 +614,22 @@ void specialFunction(int key, int x, int y)
     switch(key)
     {
         case GLUT_KEY_UP:
-            zoomOut += 0.1;
+            if(zoomOut < ZOOM_MAX) zoomOut += 0.1;
             break;
         case GLUT_KEY_DOWN:
-            zoomOut -= 0.1;
+            if(zoomOut > ZOOM_MIN) zoomOut -= 0.1;
             break;
         case GLUT_KEY_LEFT:
             ang += 5;
+            if(ang >= 360) ang -= 360;
             break;
         case GLUT_KEY_RIGHT:
             ang -= 5;
+            if(ang < 0) ang += 360;
             break;
         default: break;
     }
+    glutPostRedisplay();
 }
 
 void keyFunction(unsigned char key, int x, int y)
@@ -696,6 +709,7 @@ void keyFunction(unsigned char key, int x, int y)
 
 		default: break;
     }
+    glutPostRedisplay();
 }
 
 void initialize()
@@ -703,7 +717,6 @@ void initialize()
     glClearColor(0.2f, 0.6f, 0.5f, 1.0f);
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_SMOOTH);
     glDepthFunc(GL_LEQUAL);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_NORMALIZE);
@@ -735,6 +748,11 @@ void newGame()
 
 int main(int argc, char *argv[])
 {
+    if(!Pawn.isLoaded() || !Rook.isLoaded() || !Knight.isLoaded() || !Bishop.isLoaded() || !King.isLoaded() || !Queen.isLoaded())
+    {
+        fprintf(stderr, "Could not load the piece models from model/. Run the game from the repository root.\n");
+        return 1;
+    }
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -747,6 +765,7 @@ int main(int argc, char *argv[])
     glutReshapeFunc(reshapeFunction);
     glutKeyboardFunc(keyFunction);
     glutSpecialFunc(specialFunction);
+    glutTimerFunc(16, timerFunction, 0);
     glutMainLoop();
 	return 0;
 }
