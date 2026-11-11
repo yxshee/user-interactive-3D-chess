@@ -16,7 +16,7 @@ cd user-interactive-3D-chess
 make run
 ```
 
-`make` builds a `./chess` binary, and `make run` builds it and starts a game. Run it from the repository root, because the piece models are loaded from `model/` at startup.
+`make` builds a `./chess3d` binary, and `make run` builds it and starts a game. Run it from the repository root, because the piece models are loaded from `model/` at startup.
 
 ### Requirements
 
@@ -32,9 +32,9 @@ Without `make`, the same build is:
 
 ```bash
 # Linux
-g++ -std=c++11 -O2 -o chess main.cpp Model.cpp Chess/*.cpp -lGL -lGLU -lglut
+g++ -std=c++11 -O2 -o chess3d main.cpp Model.cpp Chess/*.cpp -lGL -lGLU -lglut
 # macOS
-clang++ -std=c++11 -O2 -DGL_SILENCE_DEPRECATION -o chess main.cpp Model.cpp Chess/*.cpp -framework OpenGL -framework GLUT
+clang++ -std=c++11 -O2 -DGL_SILENCE_DEPRECATION -o chess3d main.cpp Model.cpp Chess/*.cpp -framework OpenGL -framework GLUT
 ```
 
 ## Playing

@@ -1,5 +1,5 @@
 # Build the 3D chess game.
-#   make        -> ./chess
+#   make        -> ./chess3d
 #   make run    -> build, then start the game
 CXX      ?= g++
 CXXFLAGS ?= -std=c++11 -O2
@@ -13,13 +13,13 @@ else
   LDLIBS := -lGL -lGLU -lglut
 endif
 
-chess: $(SRCS)
+chess3d: $(SRCS)
 	$(CXX) $(CXXFLAGS) -o $@ $(SRCS) $(LDLIBS)
 
-run: chess
-	./chess
+run: chess3d
+	./chess3d
 
 clean:
-	rm -f chess
+	rm -f chess3d
 
 .PHONY: run clean

@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <cstdlib>
 using namespace std;
 
 #ifdef __APPLE__
@@ -90,7 +91,6 @@ bool    selected = false;
 bool    board_rotating = true;
 int     rotation = 0;
 bool    check = false, checkMate = false;
-bool    closeGame = false;
 bool	needPromote = false;
 
 /**
@@ -570,8 +570,6 @@ void displayFunction()
     {
         showWord(-150, 0, "- - Press N to Start The Game - -");
     }
-	if(closeGame)glutExit();
-
     glutSwapBuffers();
 
     glutPostRedisplay();
@@ -662,7 +660,7 @@ void keyFunction(unsigned char key, int x, int y)
             if(checkMate || verify) {delete chess; newGame(); verify = false;}
             break;
         case 'x': case 'X':
-			if(checkMate) { closeGame = true; delete chess;}
+            if(checkMate) { delete chess; chess = NULL; exit(0); }
             if(verify) {verify = false;}
             break;
 		case 'q': case 'Q':
