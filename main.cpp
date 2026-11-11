@@ -90,7 +90,7 @@ int     moveToRow = 1, moveToCol = 1;
 bool    selected = false;
 bool    board_rotating = true;
 int     rotation = 0;
-bool    check = false, checkMate = false;
+bool    check = false, checkMate = false, staleMate = false;
 bool	needPromote = false;
 
 /**
@@ -111,6 +111,13 @@ GLfloat     chessBoard[12][3] = {{-4.0, -4.0, 0.5},
                                 { 5.0,  5.0, 0.0},
                                 { 5.0, -5.0, 0.0}};
 
+
+/**
+*/
+bool gameOver()
+{
+    return checkMate || staleMate;
+}
 
 /**
 */
@@ -490,6 +497,10 @@ void endOfTurn()
 	{
 		checkMate = true;
 	}
+	else if(chess->inStaleMateState())
+	{
+		staleMate = true;
+	}
 	else if(chess->inCheckState())
 	{
 		check = true;
@@ -564,6 +575,13 @@ void displayFunction()
                 showWord(-150, -WINDOW_HEIGHT/2+50, "Do you want to play again?");
                 showWord(-120, -WINDOW_HEIGHT/2+25, "Yes (O)  or  No (X)");
             }
+            if(staleMate)
+            {
+                showWord(-70, WINDOW_HEIGHT/2-24, "STALEMATE!");
+                showWord(-110, WINDOW_HEIGHT/2-50, "The game is a draw.");
+                showWord(-150, -WINDOW_HEIGHT/2+50, "Do you want to play again?");
+                showWord(-120, -WINDOW_HEIGHT/2+25, "Yes (O)  or  No (X)");
+            }
         }
     }
     else
@@ -607,22 +625,22 @@ void keyFunction(unsigned char key, int x, int y)
     {
         case 'w':
         case 'W':
-            if(!needPromote && !checkMate && !verify && inGame && !board_rotating) key_W_pressed(chess->getTurnColor());
+            if(!needPromote && !gameOver() && !verify && inGame && !board_rotating) key_W_pressed(chess->getTurnColor());
             break;
         case 'a':
         case 'A':
-            if(!needPromote && !checkMate && !verify && inGame && !board_rotating) key_A_pressed(chess->getTurnColor());
+            if(!needPromote && !gameOver() && !verify && inGame && !board_rotating) key_A_pressed(chess->getTurnColor());
             break;
         case 's':
         case 'S':
-            if(!needPromote && !checkMate && !verify && inGame && !board_rotating) key_S_pressed(chess->getTurnColor());
+            if(!needPromote && !gameOver() && !verify && inGame && !board_rotating) key_S_pressed(chess->getTurnColor());
             break;
         case 'd':
         case 'D':
-            if(!needPromote && !checkMate && !verify && inGame && !board_rotating) key_D_pressed(chess->getTurnColor());
+            if(!needPromote && !gameOver() && !verify && inGame && !board_rotating) key_D_pressed(chess->getTurnColor());
             break;
         case ' ':
-            if(!needPromote && !checkMate && !verify && inGame && !board_rotating)
+            if(!needPromote && !gameOver() && !verify && inGame && !board_rotating)
             {
                 if(selected)
                 {
@@ -654,47 +672,27 @@ void keyFunction(unsigned char key, int x, int y)
         case 'n':
         case 'N':
             if(!inGame)newGame();
-            else verify = true;
+            else if(!needPromote) verify = true;
             break;
         case 'o': case 'O':
-            if(checkMate || verify) {delete chess; newGame(); verify = false;}
+            if(gameOver() || verify) {delete chess; newGame(); verify = false;}
             break;
         case 'x': case 'X':
-            if(checkMate) { delete chess; chess = NULL; exit(0); }
             if(verify) {verify = false;}
+            else if(gameOver()) { delete chess; chess = NULL; exit(0); }
             break;
 		case 'q': case 'Q':
-			if(needPromote)
-			{
-				chess->promote(moveToRow, moveToCol, PieceType::QUEEN);
-				endOfTurn();
-				break;
-			}
-			else break;
+			if(needPromote && chess->promote(moveToRow, moveToCol, PieceType::QUEEN)) endOfTurn();
+			break;
 		case 'r': case 'R':
-			if(needPromote)
-			{
-				chess->promote(moveToRow, moveToCol, PieceType::ROOK);
-				endOfTurn();
-				break;
-			}
-			else break;
+			if(needPromote && chess->promote(moveToRow, moveToCol, PieceType::ROOK)) endOfTurn();
+			break;
 		case 'b': case 'B':
-			if(needPromote)
-			{
-				chess->promote(moveToRow, moveToCol, PieceType::BISHOP);
-				endOfTurn();
-				break;
-			}
-			else break;
+			if(needPromote && chess->promote(moveToRow, moveToCol, PieceType::BISHOP)) endOfTurn();
+			break;
 		case 'k': case 'K':
-			if(needPromote)
-			{
-				chess->promote(moveToRow, moveToCol, PieceType::KNIGHT);
-				endOfTurn();
-				break;
-			}
-			else break;
+			if(needPromote && chess->promote(moveToRow, moveToCol, PieceType::KNIGHT)) endOfTurn();
+			break;
 
 		default: break;
     }
@@ -729,6 +727,9 @@ void newGame()
     inGame = true;
     check = false;
     checkMate = false;
+    staleMate = false;
+    needPromote = false;
+    verify = false;
     updateTurn(chess->getTurnColor());
 }
 
